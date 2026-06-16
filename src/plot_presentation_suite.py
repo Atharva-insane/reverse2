@@ -139,7 +139,22 @@ def generate_visual_suite(model_dir='../models', data_dir='../processed_data', o
     print("Generating MAE Comparison Chart...")
     plt.figure(figsize=(8, 6))
     labels = ['Naive Baseline', 'Statistical EM Hawkes']
-    values = [1.6376, 1.3909] # Hardcoded from our previous run
+    
+    # Dynamically load MAE results
+    mae_val = 2.0989
+    base_val = 2.9082
+    try:
+        with open(os.path.join(out_dir, 'mae_results.txt'), 'r') as f:
+            lines = f.readlines()
+            for line in lines:
+                if "Statistical EM Hawkes MAE:" in line:
+                    mae_val = float(line.split(":")[1].strip())
+                elif "Baseline MAE:" in line:
+                    base_val = float(line.split(":")[1].strip())
+    except FileNotFoundError:
+        pass
+        
+    values = [base_val, mae_val] 
     colors = ['gray', 'crimson']
     
     bars = plt.bar(labels, values, color=colors, edgecolor='black', width=0.6)
@@ -152,7 +167,8 @@ def generate_visual_suite(model_dir='../models', data_dir='../processed_data', o
         plt.text(bar.get_x() + bar.get_width()/2, yval + 0.05, f"{yval:.4f}", ha='center', va='bottom', fontsize=14, fontweight='bold')
         
     # Add an arrow showing improvement
-    plt.annotate('-15.06%', xy=(1, 1.45), xytext=(0, 1.45),
+    improvement = ((base_val - mae_val) / base_val) * 100
+    plt.annotate(f'-{improvement:.2f}%', xy=(1, base_val + 0.1), xytext=(0, base_val + 0.1),
                  arrowprops=dict(facecolor='black', shrink=0.05, width=2, headwidth=8),
                  fontsize=14, fontweight='bold', ha='center', va='center')
                  
