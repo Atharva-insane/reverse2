@@ -96,9 +96,10 @@ class NetworkConstrainedHawkesEM:
             # For each node u, how many events occurred?
             integral_alpha = 0.0
             sum_integral_term = np.zeros(self.num_nodes)
+            T_end = times[-1]
             for i in range(M):
                 u_i = nodes[i]
-                term = 1.0 - np.exp(-self.beta * (T - times[i]))
+                term = 1.0 - np.exp(-self.beta * (T_end - times[i]))
                 sum_integral_term[u_i] += term
                 integral_alpha += np.sum(self.alpha[u_i, :]) * term
                 
