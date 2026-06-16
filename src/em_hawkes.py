@@ -45,9 +45,13 @@ class NetworkConstrainedHawkesEM:
             # expected offspring sum for M-step
             sum_P_ij = np.zeros((self.num_nodes, self.num_nodes))
             
-            # To avoid O(M^2) exploding, we limit the lookback window to where e^-beta*dt is significant
-            # e.g., beta = 0.01, half-life is ~69 mins. Look back 500 mins.
-            lookback_mins = 500.0
+            # accumulators for beta M-step
+            sum_P_total = 0.0
+            sum_P_dt_total = 0.0
+            
+            # To avoid O(M^2) exploding, we limit the lookback window.
+            # We dynamically adjust lookback based on current beta (5 / beta captures >99% of exponential tail)
+            lookback_mins = min(1500.0, max(100.0, 5.0 / self.beta))
             
             for j in range(M):
                 t_j = times[j]
@@ -76,6 +80,10 @@ class NetworkConstrainedHawkesEM:
                     # Accumulate for M-step
                     # np.add.at is used to accumulate grouped by origin node
                     np.add.at(sum_P_ij[:, u_j], past_u, p_ij)
+                    
+                    # Accumulate global totals for beta update
+                    sum_P_total += np.sum(p_ij)
+                    sum_P_dt_total += np.sum(p_ij * dt)
                     
                 P_diag[j] = self.mu[u_j] / lam_j
                 log_lik += np.log(lam_j)
@@ -112,8 +120,12 @@ class NetworkConstrainedHawkesEM:
                     else:
                         self.alpha[u, v] = 0.0 # Strictly enforce zeroes
             
+            # Update beta using the exact mathematical mean-matching approximation
+            if sum_P_dt_total > 0:
+                self.beta = sum_P_total / sum_P_dt_total
+            
             duration = time.time() - start_t
-            print(f"Iter {iteration+1:02d} | Log-Likelihood: {log_lik:.2f} | Time: {duration:.1f}s")
+            print(f"Iter {iteration+1:02d} | Log-Likelihood: {log_lik:.2f} | Beta: {self.beta:.5f} | Time: {duration:.1f}s")
             
         print("EM Algorithm Converged.")
         return log_lik

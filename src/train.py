@@ -41,6 +41,7 @@ def train_em_hawkes(data_dir='../processed_data', model_dir='../models'):
     os.makedirs(model_dir, exist_ok=True)
     np.save(os.path.join(model_dir, 'alpha.npy'), model.alpha)
     np.save(os.path.join(model_dir, 'mu.npy'), model.mu)
+    np.save(os.path.join(model_dir, 'beta.npy'), np.array([model.beta]))
     
     print("Training Complete. Structural constraint satisfied.")
 

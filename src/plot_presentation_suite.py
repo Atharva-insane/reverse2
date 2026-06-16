@@ -10,6 +10,7 @@ def generate_visual_suite(model_dir='../models', data_dir='../processed_data', o
     try:
         alpha = np.load(os.path.join(model_dir, 'alpha.npy'))
         mu = np.load(os.path.join(model_dir, 'mu.npy'))
+        beta = float(np.load(os.path.join(model_dir, 'beta.npy'))[0])
         df = pd.read_csv(os.path.join(data_dir, 'events.csv'))
         with open(os.path.join(data_dir, 'airports.pkl'), 'rb') as f:
             airports = pickle.load(f)
@@ -107,9 +108,8 @@ def generate_visual_suite(model_dir='../models', data_dir='../processed_data', o
         time_grid = np.linspace(plot_start, plot_end, 500)
         mu_val = mu[target_idx]
         
-        # Calculate contagion intensity
+        # Calculate contagion intensity using dynamic beta
         contagion_intensity = np.zeros_like(time_grid)
-        beta = 0.01
         
         past_events = df_sub[df_sub['TIME_MINUTES'] < plot_end]
         for _, row in past_events.iterrows():

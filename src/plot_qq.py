@@ -10,6 +10,7 @@ def plot_qq_random_time_change(model_dir='../models', data_dir='../processed_dat
     try:
         alpha = np.load(os.path.join(model_dir, 'alpha.npy'))
         mu = np.load(os.path.join(model_dir, 'mu.npy'))
+        beta = float(np.load(os.path.join(model_dir, 'beta.npy'))[0])
         df = pd.read_csv(os.path.join(data_dir, 'events.csv'))
         with open(os.path.join(data_dir, 'airports.pkl'), 'rb') as f:
             airports = pickle.load(f)
@@ -24,7 +25,7 @@ def plot_qq_random_time_change(model_dir='../models', data_dir='../processed_dat
         return
         
     target_idx = airports.index(target_airport)
-    beta = 0.01 # From train.py
+    # beta is loaded from file now
     
     # We use a limited subset (e.g., first 5000 events) for computational speed
     df_sub = df.head(5000).copy()

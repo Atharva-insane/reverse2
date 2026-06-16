@@ -8,6 +8,7 @@ def evaluate_mae(model_dir='../models', data_dir='../processed_data', out_dir='.
     try:
         alpha = np.load(os.path.join(model_dir, 'alpha.npy'))
         mu = np.load(os.path.join(model_dir, 'mu.npy'))
+        beta = float(np.load(os.path.join(model_dir, 'beta.npy'))[0])
         df = pd.read_csv(os.path.join(data_dir, 'events.csv'))
         with open(os.path.join(data_dir, 'airports.pkl'), 'rb') as f:
             airports = pickle.load(f)
@@ -29,7 +30,6 @@ def evaluate_mae(model_dir='../models', data_dir='../processed_data', out_dir='.
     end_time = df_test['TIME_MINUTES'].max()
     
     num_nodes = len(airports)
-    beta = 0.01 # Used in train.py
     
     # We will bin the test period into 1-hour (60 minute) windows
     window_size = 60.0
