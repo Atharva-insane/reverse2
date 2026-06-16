@@ -124,9 +124,17 @@ class NetworkConstrainedHawkesEM:
             # Update beta using the exact mathematical mean-matching approximation
             if sum_P_dt_total > 0:
                 self.beta = sum_P_total / sum_P_dt_total
+                
+            # Enforce Stationarity: Spectral Radius must be strictly < 1.0
+            eigenvalues = np.linalg.eigvals(self.alpha)
+            spectral_radius = np.max(np.real(eigenvalues))
+            if spectral_radius >= 1.0:
+                # Project the matrix down to 0.99 to guarantee stability while preserving relative geometry
+                self.alpha = self.alpha * (0.99 / spectral_radius)
+                spectral_radius = 0.99
             
             duration = time.time() - start_t
-            print(f"Iter {iteration+1:02d} | Log-Likelihood: {log_lik:.2f} | Beta: {self.beta:.5f} | Time: {duration:.1f}s")
+            print(f"Iter {iteration+1:02d} | LL: {log_lik:.2f} | Beta: {self.beta:.5f} | Spectral Radius: {spectral_radius:.4f} | Time: {duration:.1f}s")
             
         print("EM Algorithm Converged.")
         return log_lik
