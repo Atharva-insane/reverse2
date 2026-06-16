@@ -66,27 +66,27 @@ We definitively prove the model's superiority using two rigorous frameworks:
 The pipeline generates 5 world-class visual artifacts located in `output/` for executive presentations:
 1.  **`network_topology.png`**: A Kamada-Kawai directed graph highlighting the Top 100 structural contagion pathways. Nodes are explicitly sized by their Total Branching Ratio (Contagiousness).
     
-    ![Network Topology](output/network_topology.png)
+    ![Network Topology](output/network_topology.png?v=2)
 
 2.  **`alpha_heatmap.png`**: The strictly constrained Infectivity Matrix ($\alpha_{ij}$), proving the network's mathematical sparsity.
 
-    ![Alpha Heatmap](output/alpha_heatmap.png)
+    ![Alpha Heatmap](output/alpha_heatmap.png?v=2)
 
 3.  **`hawkes_decomposition_ORD.png`**: The continuous-time visualization decoupling static background risk from massive self-exciting delay cascades.
 
-    ![Hawkes Decomposition ORD](output/hawkes_decomposition_ORD.png)
+    ![Hawkes Decomposition ORD](output/hawkes_decomposition_ORD.png?v=2)
 
 4.  **`mae_comparison.png`**: The definitive 27.83% ROI predictive improvement bar chart.
 
-    ![MAE Comparison](output/mae_comparison.png)
+    ![MAE Comparison](output/mae_comparison.png?v=2)
 
 5.  **`beta_convergence.png`**: Proof of absolute mathematical convergence for the decay rate parameter ($\beta$).
 
-    ![Beta Convergence](output/beta_convergence.png)
+    ![Beta Convergence](output/beta_convergence.png?v=2)
 
 6.  **`qq_plot_ORD.png`**: The "Mic Drop" Random Time Change proof.
 
-    ![QQ Plot](output/qq_plot_ORD.png)
+    ![QQ Plot](output/qq_plot_ORD.png?v=2)
 
 ---
 
