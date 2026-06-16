@@ -125,20 +125,16 @@ class NetworkConstrainedHawkesEM:
             
             # Update beta using the exact mathematical mean-matching approximation
             if sum_P_dt_total > 0:
-                self.beta = sum_P_total / sum_P_dt_total
+                beta_new = sum_P_total / sum_P_dt_total
+                self.beta = np.clip(beta_new, 0.1, 2.0) # Physical upper bound (20min - 6hr half-life)
                 
-            # Enforce Stationarity via Per-Row Normalization
-            # If any individual airport triggers > 0.99 expected cascades, scale its specific row down
-            for u in range(self.num_nodes):
-                row_sum = np.sum(self.alpha[u, :])
-                if row_sum > 0.99:
-                    self.alpha[u, :] = self.alpha[u, :] * (0.99 / row_sum)
-                    
-            eigenvalues = np.linalg.eigvals(self.alpha)
-            spectral_radius = np.max(np.real(eigenvalues))
+            # Enforce Stationarity via Global Spectral Projection
+            rho = np.max(np.real(np.linalg.eigvals(self.alpha)))
+            if rho > 1.0:
+                self.alpha *= (0.99 / rho)
             
             duration = time.time() - start_t
-            print(f"Iter {iteration+1:02d} | LL: {log_lik:.2f} | Beta: {self.beta:.5f} | Spectral Radius: {spectral_radius:.4f} | Time: {duration:.1f}s")
+            print(f"Iter {iteration+1:02d} | LL: {log_lik:.2f} | Beta: {self.beta:.5f} | Spectral Radius: {rho:.4f} | Time: {duration:.1f}s")
             
         print("EM Algorithm Converged.")
         return log_lik, beta_history
