@@ -18,20 +18,20 @@ def train_em_hawkes(data_dir='../processed_data', model_dir='../models'):
     num_nodes = len(airports)
     
     # Sort just in case
-    df = df.sort_values(by='TIME_MINUTES')
+    df = df.sort_values(by='TIME_HOURS')
     
     # We take the first 20,000 events to prove the EM algorithm works without taking hours
     num_events = min(20000, len(df))
     df = df.head(num_events)
     
-    times = df['TIME_MINUTES'].values
+    times = df['TIME_HOURS'].values
     nodes = df['NODE'].values
     
     T = times[-1] - times[0]
     
     print(f"Initializing EM Hawkes Model ({num_nodes} nodes, {num_events} events)...")
-    # beta=0.01 implies a half-life of roughly 69 minutes for contagion delay
-    model = NetworkConstrainedHawkesEM(num_nodes=num_nodes, adj_matrix=adj_matrix, beta=0.01)
+    # beta=0.2 implies a half-life of roughly 3.46 hours for contagion delay
+    model = NetworkConstrainedHawkesEM(num_nodes=num_nodes, adj_matrix=adj_matrix, beta=0.2)
     
     # Train
     # We do 10 iterations to prove monotonic convergence of Log-Likelihood

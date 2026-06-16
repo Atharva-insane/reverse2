@@ -99,11 +99,11 @@ def generate_visual_suite(model_dir='../models', data_dir='../processed_data', o
         target_idx = airports.index('ORD')
         # Filter first 5000 events
         df_sub = df.head(5000)
-        start_t = df_sub['TIME_MINUTES'].min()
+        start_t = df_sub['TIME_HOURS'].min()
         
-        # We will plot 12 hours (720 mins) starting from minute 2000
-        plot_start = start_t + 2000
-        plot_end = plot_start + 720
+        # We will plot 24 hours starting from hour 50
+        plot_start = start_t + 50.0
+        plot_end = plot_start + 24.0
         
         time_grid = np.linspace(plot_start, plot_end, 500)
         mu_val = mu[target_idx]
@@ -111,9 +111,9 @@ def generate_visual_suite(model_dir='../models', data_dir='../processed_data', o
         # Calculate contagion intensity using dynamic beta
         contagion_intensity = np.zeros_like(time_grid)
         
-        past_events = df_sub[df_sub['TIME_MINUTES'] < plot_end]
+        past_events = df_sub[df_sub['TIME_HOURS'] < plot_end]
         for _, row in past_events.iterrows():
-            t_k = row['TIME_MINUTES']
+            t_k = row['TIME_HOURS']
             u_k = int(row['NODE'])
             a = alpha[u_k, target_idx]
             if a > 0:
@@ -127,8 +127,8 @@ def generate_visual_suite(model_dir='../models', data_dir='../processed_data', o
         plt.fill_between(time_grid, mu_val, mu_val + contagion_intensity, color='red', alpha=0.3, label='Network Contagion Cascades')
         
         plt.title('ORD Intensity Decomposition (Continuous Time)', fontsize=16, fontweight='bold')
-        plt.xlabel('Time (Minutes)', fontsize=14)
-        plt.ylabel(r'Expected Events per Minute ($\lambda(t)$)', fontsize=14)
+        plt.xlabel('Time (Hours)', fontsize=14)
+        plt.ylabel(r'Expected Events per Hour ($\lambda(t)$)', fontsize=14)
         plt.legend(fontsize=12)
         plt.grid(True, alpha=0.3)
         plt.tight_layout()

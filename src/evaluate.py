@@ -26,13 +26,13 @@ def evaluate_mae(model_dir='../models', data_dir='../processed_data', out_dir='.
     if len(df_test) == 0:
         df_test = df_train # fallback if dataset is small
         
-    start_time = df_test['TIME_MINUTES'].min()
-    end_time = df_test['TIME_MINUTES'].max()
+    start_time = df_test['TIME_HOURS'].min()
+    end_time = df_test['TIME_HOURS'].max()
     
     num_nodes = len(airports)
     
-    # We will bin the test period into 1-hour (60 minute) windows
-    window_size = 60.0
+    # We will bin the test period into 1-hour windows
+    window_size = 1.0
     num_windows = int(np.ceil((end_time - start_time) / window_size))
     
     print(f"Evaluating MAE over {num_windows} hourly test windows...")
@@ -40,7 +40,7 @@ def evaluate_mae(model_dir='../models', data_dir='../processed_data', out_dir='.
     # True counts per window
     true_counts = np.zeros((num_windows, num_nodes))
     for _, row in df_test.iterrows():
-        t = row['TIME_MINUTES']
+        t = row['TIME_HOURS']
         u = int(row['NODE'])
         w = int((t - start_time) / window_size)
         if w < num_windows:
@@ -53,7 +53,7 @@ def evaluate_mae(model_dir='../models', data_dir='../processed_data', out_dir='.
     
     # All historical events up to the end of the test period influence the intensity
     # For speed, we just use events in df_train + df_test up to the window
-    historical_times = pd.concat([df_train['TIME_MINUTES'], df_test['TIME_MINUTES']]).values
+    historical_times = pd.concat([df_train['TIME_HOURS'], df_test['TIME_HOURS']]).values
     historical_nodes = pd.concat([df_train['NODE'], df_test['NODE']]).values.astype(int)
     
     for w in range(num_windows):
@@ -64,9 +64,9 @@ def evaluate_mae(model_dir='../models', data_dir='../processed_data', out_dir='.
         pred_counts[w, :] += mu * window_size
         
         # Find past events before w_end
-        # To avoid O(N^2) slowdown, only look back 500 mins
+        # To avoid O(N^2) slowdown, only look back 24 hours
         idx_end = np.searchsorted(historical_times, w_end)
-        idx_start = np.searchsorted(historical_times, w_start - 500.0)
+        idx_start = np.searchsorted(historical_times, w_start - 24.0)
         
         if idx_start < idx_end:
             past_t = historical_times[idx_start:idx_end]

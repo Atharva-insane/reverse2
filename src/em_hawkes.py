@@ -5,7 +5,7 @@ import pickle
 import time
 
 class NetworkConstrainedHawkesEM:
-    def __init__(self, num_nodes, adj_matrix, beta=0.01):
+    def __init__(self, num_nodes, adj_matrix, beta=0.2):
         self.num_nodes = num_nodes
         self.adj_matrix = adj_matrix # (N, N) binary mask of allowed edges
         self.beta = beta
@@ -51,7 +51,7 @@ class NetworkConstrainedHawkesEM:
             
             # To avoid O(M^2) exploding, we limit the lookback window.
             # We dynamically adjust lookback based on current beta (5 / beta captures >99% of exponential tail)
-            lookback_mins = min(1500.0, max(100.0, 5.0 / self.beta))
+            lookback_hours = min(48.0, max(5.0, 5.0 / self.beta))
             
             for j in range(M):
                 t_j = times[j]
@@ -61,8 +61,8 @@ class NetworkConstrainedHawkesEM:
                 lam_j = self.mu[u_j]
                 
                 # Find valid past events
-                # We can optimize this by finding the index where times > t_j - lookback_mins
-                i_start = np.searchsorted(times, t_j - lookback_mins)
+                # We can optimize this by finding the index where times > t_j - lookback_hours
+                i_start = np.searchsorted(times, t_j - lookback_hours)
                 
                 if i_start < j:
                     past_t = times[i_start:j]

@@ -31,8 +31,8 @@ def plot_qq_random_time_change(model_dir='../models', data_dir='../processed_dat
     df_sub = df.head(5000).copy()
     
     # Extract only events that happened at the target airport
-    target_events = df_sub[df_sub['NODE'] == target_idx]['TIME_MINUTES'].values
-    all_times = df_sub['TIME_MINUTES'].values
+    target_events = df_sub[df_sub['NODE'] == target_idx]['TIME_HOURS'].values
+    all_times = df_sub['TIME_HOURS'].values
     all_nodes = df_sub['NODE'].values.astype(int)
     
     if len(target_events) < 10:

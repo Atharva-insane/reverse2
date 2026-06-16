@@ -38,7 +38,7 @@ def prepare_continuous_data(package_path=r"E:\Downloads\hawkes_event_log_package
     
     print("Adapting data for the EM algorithm...")
     df = pd.DataFrame()
-    df['TIME_MINUTES'] = df_raw['t_hours'] * 60.0
+    df['TIME_HOURS'] = df_raw['t_hours']
     df['NODE'] = df_raw['top_node'].astype(int)
     
     if 'departure_delay' in df_raw.columns:
@@ -48,7 +48,7 @@ def prepare_continuous_data(package_path=r"E:\Downloads\hawkes_event_log_package
     else:
         df['DEPARTURE_DELAY'] = 20.0 
         
-    df = df.sort_values(by='TIME_MINUTES')
+    df = df.sort_values(by='TIME_HOURS')
     
     os.makedirs(data_dir, exist_ok=True)
     
