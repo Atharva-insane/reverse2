@@ -50,7 +50,14 @@ def generate_visual_suite(model_dir='../models', data_dir='../processed_data', o
     nx.draw_networkx_edges(G, pos, edgelist=edges, width=weights, edge_color='gray', 
                            arrowsize=20, alpha=0.5, connectionstyle='arc3,rad=0.15')
                            
+    # Add Edge Labels for the Branching Ratios (only for the strongest edges to avoid clutter)
+    # alpha[i, j] IS the branching ratio since integral of beta*e^{-beta t} is 1.
+    edge_labels = {(u, v): f"{G[u][v]['weight']/50:.3f}" for u, v in edges if (G[u][v]['weight']/50) > 0.012}
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=8, font_color='darkred', label_pos=0.3)
+                           
     plt.title('US Aviation Systemic Risk: Top Contagion Pathways', fontsize=22, fontweight='bold')
+    plt.text(0.5, -0.05, 'Node Size = Total Branching Ratio (Expected Cascades Triggered)\nEdge Labels = Pairwise Branching Ratio ($\u03B1_{ij}$)', 
+             ha='center', va='center', transform=plt.gca().transAxes, fontsize=14, fontstyle='italic', color='dimgray')
     plt.axis('off')
     plt.tight_layout()
     plt.savefig(os.path.join(out_dir, 'network_topology.png'), dpi=300)
