@@ -1,3 +1,3 @@
-Statistical EM Hawkes MAE: 2.0989
+Statistical EM Hawkes MAE: 1.8487
 Baseline MAE: 2.9082
-Improvement: 27.83%
+Improvement: 36.43%
