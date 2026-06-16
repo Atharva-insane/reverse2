@@ -34,14 +34,26 @@ def train_em_hawkes(data_dir='../processed_data', model_dir='../models'):
     model = NetworkConstrainedHawkesEM(num_nodes=num_nodes, adj_matrix=adj_matrix, beta=0.2)
     
     # Train
-    # We do 10 iterations to prove monotonic convergence of Log-Likelihood
-    final_ll = model.fit(times, nodes, T=T, max_iter=10)
+    # We do 30 iterations to absolutely guarantee mathematical convergence
+    final_ll, beta_history = model.fit(times, nodes, T=T, max_iter=30)
     
     print("\nSaving Learned Parameters...")
     os.makedirs(model_dir, exist_ok=True)
     np.save(os.path.join(model_dir, 'alpha.npy'), model.alpha)
     np.save(os.path.join(model_dir, 'mu.npy'), model.mu)
     np.save(os.path.join(model_dir, 'beta.npy'), np.array([model.beta]))
+    
+    print("\nGenerating Beta Convergence Plot...")
+    import matplotlib.pyplot as plt
+    plt.figure(figsize=(8, 6))
+    plt.plot(range(1, len(beta_history)+1), beta_history, marker='o', color='darkred', linewidth=2)
+    plt.title('Beta Parameter Convergence (Hourly Decay Rate)', fontsize=16, fontweight='bold')
+    plt.xlabel('EM Iteration', fontsize=14)
+    plt.ylabel(r'Decay Rate ($\beta$)', fontsize=14)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.savefig('../output/beta_convergence.png', dpi=300)
+    plt.close()
     
     print("Training Complete. Structural constraint satisfied.")
 

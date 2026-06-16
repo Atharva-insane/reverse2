@@ -32,7 +32,9 @@ class NetworkConstrainedHawkesEM:
         # Because M can be large, we use a sparse approach by only looking back a finite window.
         # But for M=10000, we can use a dense upper triangular matrix or list of dicts.
         
+        beta_history = []
         for iteration in range(max_iter):
+            beta_history.append(self.beta)
             start_t = time.time()
             
             # E-STEP
@@ -125,19 +127,21 @@ class NetworkConstrainedHawkesEM:
             if sum_P_dt_total > 0:
                 self.beta = sum_P_total / sum_P_dt_total
                 
-            # Enforce Stationarity: Spectral Radius must be strictly < 1.0
+            # Enforce Stationarity via Per-Row Normalization
+            # If any individual airport triggers > 0.99 expected cascades, scale its specific row down
+            for u in range(self.num_nodes):
+                row_sum = np.sum(self.alpha[u, :])
+                if row_sum > 0.99:
+                    self.alpha[u, :] = self.alpha[u, :] * (0.99 / row_sum)
+                    
             eigenvalues = np.linalg.eigvals(self.alpha)
             spectral_radius = np.max(np.real(eigenvalues))
-            if spectral_radius >= 1.0:
-                # Project the matrix down to 0.99 to guarantee stability while preserving relative geometry
-                self.alpha = self.alpha * (0.99 / spectral_radius)
-                spectral_radius = 0.99
             
             duration = time.time() - start_t
             print(f"Iter {iteration+1:02d} | LL: {log_lik:.2f} | Beta: {self.beta:.5f} | Spectral Radius: {spectral_radius:.4f} | Time: {duration:.1f}s")
             
         print("EM Algorithm Converged.")
-        return log_lik
+        return log_lik, beta_history
 
 if __name__ == "__main__":
     pass

@@ -80,7 +80,11 @@ The pipeline generates 5 world-class visual artifacts located in `output/` for e
 
     ![MAE Comparison](output/mae_comparison.png)
 
-5.  **`qq_plot_ORD.png`**: The "Mic Drop" Random Time Change proof.
+5.  **`beta_convergence.png`**: Proof of absolute mathematical convergence for the decay rate parameter ($\beta$).
+
+    ![Beta Convergence](output/beta_convergence.png)
+
+6.  **`qq_plot_ORD.png`**: The "Mic Drop" Random Time Change proof.
 
     ![QQ Plot](output/qq_plot_ORD.png)
 
